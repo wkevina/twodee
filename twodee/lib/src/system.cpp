@@ -2,42 +2,64 @@
 // Created by Kevin Ward on 5/6/17.
 //
 
-#include "System.h"
-#include <iostream>
-#include <cstdlib>
+#include "system.h"
+#include <common.h>
 
+namespace twodee {
 
-GLFWwindow *twodee::System::init() {
+System::System() : window_(nullptr) { };
+
+void System::init()
+{
     // Initialize glfw
     glfwInit();
-
 
     // Configure context creation
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
     // Platform specific configuration
-#if __APPLE__
+    #if __APPLE__
 
-#include "TargetConditionals.h"
+        #include "TargetConditionals.h"
 
-#if TARGET_OS_MAC
+        #if TARGET_OS_MAC
     // Required on macOS or else window/context creation will fail
-//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-#endif
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        #endif
+    #endif
 
-    GLFWwindow *window = glfwCreateWindow(640, 480, "twodee demo", nullptr, nullptr);
+    auto window = glfwCreateWindow(640, 480, "twodee demo", nullptr, nullptr);
 
     if (window == nullptr) {
-        std::cout << "Failed to create window" << std::endl;
-        glfwTerminate();
-        exit(-1);
+        throw Error("Failed to create window");
     }
 
-    this->mp_window = window;
+    window_ = window;
 
-    return window;
+    glfwSetWindowAspectRatio(window_, 4, 3);
+
+    int width, height;
+    glfwGetFramebufferSize(window_, &width, &height);
+
+    glViewport(0, 0, width, height);
+}
+
+GLFWwindow *System::window()
+{
+    return window_;
+}
+
+System::~System()
+{
+    if (window_) {
+        glfwDestroyWindow(window_);
+        window_ = nullptr;
+    }
+
+    glfwTerminate();
+}
+
 }

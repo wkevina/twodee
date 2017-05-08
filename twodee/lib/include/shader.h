@@ -18,9 +18,13 @@ private:
     GLuint program_;
 
 public:
-    Shader(const std::string &&vs, const std::string &&fs);
+    Shader(const std::string vs, const std::string fs);
+    Shader(Shader && other);
+    ~Shader();
     const std::string &vertex_source();
     const std::string &fragment_source();
+
+    static Shader load_files(const std::string vs_path, const std::string fs_path);
 };
 };
 
