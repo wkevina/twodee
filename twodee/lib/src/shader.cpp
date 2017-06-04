@@ -2,10 +2,10 @@
 // Created by Kevin Ward on 5/6/17.
 //
 
-#include "shader.h"
+#include "twodee/shader.h"
 #include <iostream>
 #include <fstream>
-#include <common.h>
+#include <twodee/common.h>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -84,7 +84,7 @@ Shader::Shader(const string vs, const string fs) :
         throw Error(reason);
     }
 
-    program_ = p;
+    _program = p;
 
     glDeleteShader(vso);
     glDeleteShader(fso);
@@ -94,9 +94,9 @@ Shader::Shader(const string vs, const string fs) :
 Shader::Shader(Shader && other) :
         vertex_source_(std::move(other.vertex_source_)),
         fragment_source_(std::move(other.fragment_source_)),
-        program_(other.program_)
+        _program(other._program)
 {
-    other.program_ = 0;
+    other._program = 0;
 }
 
 
@@ -112,9 +112,10 @@ const std::string & Shader::fragment_source()
 
 Shader::~Shader()
 {
-    if (program_) {
-        glDeleteProgram(program_);
-        program_ = 0;
+    if (_program) {
+        deactivate();
+        glDeleteProgram(_program);
+        _program = 0;
     }
 }
 
@@ -142,6 +143,20 @@ Shader Shader::load_files(const std::string vs_path, const std::string fs_path)
     cout << fragment_source;
 
     return Shader(vertex_source, fragment_source);
+}
+
+void Shader::activate()
+{
+    glUseProgram(_program);
+    _activated = true;
+}
+
+void Shader::deactivate()
+{
+    if (_activated) {
+        glUseProgram(0);
+        _activated = false;
+    }
 }
 
 }

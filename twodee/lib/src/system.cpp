@@ -2,8 +2,8 @@
 // Created by Kevin Ward on 5/6/17.
 //
 
-#include "system.h"
-#include <common.h>
+#include "twodee/system.h"
+#include <twodee/common.h>
 
 namespace twodee {
 

@@ -2,8 +2,8 @@
 // Created by Kevin Ward on 5/7/17.
 //
 
-#include <common.h>
-#include "resource.h"
+#include <twodee/common.h>
+#include "twodee/resource.h"
 
 #include <fstream>
 #include <iostream>

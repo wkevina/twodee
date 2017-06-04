@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
-#include <shader.h>
+#include <twodee/shader.h>
 
 
 namespace twodee {
