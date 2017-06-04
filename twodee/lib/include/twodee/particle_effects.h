@@ -12,10 +12,15 @@ namespace twodee {
  * @brief Particle: object that moves through space, expiring after some time
  */
 struct Particle {
+    using vec_type = glm::vec2;
     // particle position
     glm::vec2 pos;
     // particle velocity
     glm::vec2 vel;
+    // acceleration
+    glm::vec2 acc;
+    // mass
+    float mass;
     // color
     glm::vec4 color;
     // rendering size of particle
@@ -45,7 +50,7 @@ public:
      * TODO: use a generating object to vary particle parameters (e.g. driven by random source)
      * @return Particle
      */
-    Particle emit() const;
+    Particle emit_particle() const;
 };
 
 

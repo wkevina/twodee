@@ -15,7 +15,8 @@ class Shader {
     std::string fragment_source_;
 
 private:
-    GLuint program_;
+    GLuint _program;
+    bool _activated;
 
 public:
     Shader(const std::string vs, const std::string fs);
@@ -23,6 +24,8 @@ public:
     ~Shader();
     const std::string &vertex_source();
     const std::string &fragment_source();
+    void activate();
+    void deactivate();
 
     static Shader load_files(const std::string vs_path, const std::string fs_path);
 };
