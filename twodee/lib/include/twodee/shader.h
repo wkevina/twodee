@@ -26,6 +26,7 @@ public:
     const std::string &fragment_source();
     void activate();
     void deactivate();
+    void validate();
 
     static Shader load_files(const std::string vs_path, const std::string fs_path);
 };

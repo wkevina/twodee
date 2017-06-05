@@ -38,14 +38,12 @@ string read_program_error(GLuint program)
     return msg;
 }
 
-GLuint compile_shader(const string & source)
+GLuint compile_shader(const string & source, const GLenum type)
 {
-    GLuint shader_handle = glCreateShader(GL_VERTEX_SHADER);
+    GLuint shader_handle = glCreateShader(type);
 
-    {
-        const char *vs_cs = source.c_str();
-        glShaderSource(shader_handle, 1, &vs_cs, nullptr);
-    }
+    const char *vs_cs = source.c_str();
+    glShaderSource(shader_handle, 1, &vs_cs, nullptr);
 
     glCompileShader(shader_handle);
 
@@ -59,20 +57,23 @@ GLuint compile_shader(const string & source)
         throw Error(reason);
     }
 
-    return 0;
+    return shader_handle;
 }
 
 Shader::Shader(const string vs, const string fs) :
         vertex_source_(vs), fragment_source_(fs)
 {
-    const auto vso = compile_shader(vs);
-    const auto fso = compile_shader(fs);
+    const auto vso = compile_shader(vs, GL_VERTEX_SHADER);
+    const auto fso = compile_shader(fs, GL_FRAGMENT_SHADER);
 
     const auto p = glCreateProgram();
 
     glAttachShader(p, vso);
     glAttachShader(p, fso);
+
     glLinkProgram(p);
+
+    // check link errors
 
     int success;
     glGetProgramiv(p, GL_LINK_STATUS, &success);
@@ -90,7 +91,6 @@ Shader::Shader(const string vs, const string fs) :
     glDeleteShader(fso);
 }
 
-
 Shader::Shader(Shader && other) :
         vertex_source_(std::move(other.vertex_source_)),
         fragment_source_(std::move(other.fragment_source_)),
@@ -98,7 +98,6 @@ Shader::Shader(Shader && other) :
 {
     other._program = 0;
 }
-
 
 const std::string & Shader::vertex_source()
 {
@@ -156,6 +155,22 @@ void Shader::deactivate()
     if (_activated) {
         glUseProgram(0);
         _activated = false;
+    }
+}
+
+void Shader::validate()
+{
+    glValidateProgram(_program);
+
+    // check validation errors
+    int success;
+    glGetProgramiv(_program, GL_VALIDATE_STATUS, &success);
+
+    if (success == GL_FALSE) {
+        string reason = read_program_error(_program);
+        glDeleteProgram(_program);
+
+        throw Error(reason);
     }
 }
 
