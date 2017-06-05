@@ -94,11 +94,14 @@ int main()
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
         /* Render here */
+        glClearColor(0.1, 0.1, 0.1, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
         /* set up shaders and vertex data */
         shader.activate();
         glBindVertexArray(vao_id);
+
+        shader.validate();
 
         /* emit render commands */
         glDrawArrays(GL_POINTS, 0, particle_vbo.element_count);

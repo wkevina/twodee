@@ -7,8 +7,7 @@
 #include <fstream>
 #include <twodee/common.h>
 #include <vector>
-#include <string>
-#include <iostream>
+
 
 using namespace std;
 
@@ -135,8 +134,8 @@ Shader Shader::load_files(const std::string vs_path, const std::string fs_path)
     string vertex_source;
     string fragment_source;
 
-    while (getline(vs_file, vertex_source)) { };
-    while (getline(vs_file, fragment_source)) { };
+    while (getline(vs_file, vertex_source)) {};
+    while (getline(vs_file, fragment_source)) {};
 
     cout << vertex_source;
     cout << fragment_source;

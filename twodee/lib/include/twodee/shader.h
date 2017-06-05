@@ -15,6 +15,9 @@ class Shader {
     std::string fragment_source_;
 
 private:
+    Shader(const Shader &other) = delete;
+    Shader& operator=(const Shader& other) = delete;
+
     GLuint _program;
     bool _activated;
 
