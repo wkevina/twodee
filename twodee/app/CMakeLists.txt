@@ -4,8 +4,6 @@ set(SOURCE_FILES main.cpp)
 
 add_executable(demo ${SOURCE_FILES})
 
-target_link_libraries(demo twodee_renderer)
-
-add_executable(hello_triangle hello_triangle.cpp)
-
-target_link_libraries(hello_triangle twodee_renderer)
+target_link_libraries(demo twodee)
+target_include_directories(demo PUBLIC
+        $<TARGET_PROPERTY:twodee,INTERFACE_INCLUDE_DIRECTORIES>)

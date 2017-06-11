@@ -1,12 +1,18 @@
 #ifndef TWODEE_PARTICLE_EFFECTS_H
 #define TWODEE_PARTICLE_EFFECTS_H
 
+#include "twodee/twodee.h"
+#include <vector>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
-
 namespace twodee {
+
+enum ParticleShaderAttributes {
+    position = 0,
+    size = 1
+};
 
 /**
  * @brief Particle: object that moves through space, expiring after some time
@@ -29,20 +35,19 @@ struct Particle {
     unsigned int health;
 };
 
-class Emitter {
-private:
-    // initial direction of emitted particles
-    glm::vec2 _dir;
-    // starting speed; dir * speed = velocity
-    float _speed;
-    // default color
-    glm::vec4 _default_color;
-    // default radius
-    float _radius;
-    // starting health
-    unsigned int _health;
+struct ParticleVboElement {
+    glm::vec2 pos;
+    float radius;
 
+    ParticleVboElement() = default;
+    ParticleVboElement(glm::vec2 pos, float radius);
+    ParticleVboElement(const Particle & p);
+};
+
+
+class Emitter {
 public:
+    Emitter();
     Emitter(float speed, glm::vec2 dir, float radius, glm::vec4 color, unsigned int health);
 
     /**
@@ -51,8 +56,45 @@ public:
      * @return Particle
      */
     Particle emit_particle() const;
+
+    // initial direction of emitted particles
+    glm::vec2 dir;
+    // starting speed; dir * speed = velocity
+    float speed;
+    // default color
+    glm::vec4 default_color;
+    // default radius
+    float radius;
+    // starting health
+    unsigned int health;
 };
 
+class ParticleSystem {
+public:
+    ParticleSystem(int start, int max, glm::vec2 extents);
+
+    void update(float dt);
+    void render();
+
+    Emitter emitter;
+
+    // container for all particles in system
+    std::vector<Particle> particles;
+
+    // simulation parameters
+    int start;
+    int max;
+    int current_particles;
+
+    glm::vec2 extents;
+
+    // rendering related variables
+    GLuint vao, vbo;
+    std::vector<ParticleVboElement> buffer_data;
+
+private:
+    void update_gpu_data();
+};
 
 }
 
