@@ -5,7 +5,7 @@ add_library(twodee src/twodee_renderer.cpp src/system.cpp include/twodee/system.
 target_link_libraries(twodee
         glfw
         GLEW::GLEW
-        OpenGL::GL)
+        ${OPENGL_gl_LIBRARY})
 
 target_include_directories(twodee
         PUBLIC
