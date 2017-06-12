@@ -42,6 +42,8 @@ void System::init()
 
     window_ = window;
 
+    glfwMakeContextCurrent(window_);
+
     glfwSetWindowAspectRatio(window_, 4, 3);
 
     int width, height;
