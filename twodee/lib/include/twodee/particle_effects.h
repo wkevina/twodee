@@ -94,6 +94,8 @@ public:
 
 private:
     void update_gpu_data();
+
+    void init_particles();
 };
 
 }
