@@ -2,6 +2,8 @@
 #include <vector>
 #include <twodee/twodee.h>
 #include <random>
+#include <thread>
+#include <chrono>
 
 using namespace std;
 
@@ -45,11 +47,30 @@ VboWrapper load_particle_vbo() {
     return VboWrapper {vbo_id, buf_size, sizeof(twodee::Particle), MAX_PARTICLES};
 }
 
+void limit_framerate(double offset, double frame_length) {
+    static double total_time = offset;
+    double elapsed_time = offset;
+
+    // reset timer
+    glfwSetTime(0);
+
+    using seconds = chrono::duration<double,std::ratio<1>>;
+
+    while (elapsed_time < frame_length) {
+        // sleep for remaining time until next frame
+        this_thread::sleep_for(seconds(frame_length - elapsed_time));
+
+        // count elapsed time
+        elapsed_time += glfwGetTime();
+        // reset timer
+        glfwSetTime(0);
+    }
+
+    total_time += elapsed_time;
+}
+
 int main()
 {
-    cout << "Particle is standard layout type: " << is_standard_layout<twodee::Particle>() << endl;
-    cout << "vec2 length is: " << glm::vec2::length() << endl;
-
     twodee::System system;
     system.init();
 
@@ -62,51 +83,40 @@ int main()
 
     auto shader = shader_files.load_shader("sprite.vert.glsl", "sprite.frag.glsl");
 
-    auto particle_vbo = load_particle_vbo();
-
-    int buf_size;
-
-    glBindBuffer(GL_ARRAY_BUFFER, particle_vbo.vbo_id);
-    glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &buf_size);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    cout << "Buffer size is: " << buf_size << endl;
-
-    GLuint vao_id;
-    glGenVertexArrays(1, &vao_id);
-
-    glBindVertexArray(vao_id);
-    glBindBuffer(GL_ARRAY_BUFFER, particle_vbo.vbo_id);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(twodee::Particle), (const void *)0);   //offsetof(twodee::Particle, pos));
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    twodee::ParticleSystem particle_system{10000, 10000, glm::vec2(1.0, 1.0)};
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
+        glfwSetTime(0);
+
+        particle_system.update(1.0 / 60);
+
         /* Render here */
         glClearColor(0.1, 0.1, 0.1, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
         /* set up shaders and vertex data */
         shader.activate();
-        glBindVertexArray(vao_id);
 
-        shader.validate();
+        // shader.validate();
 
         /* emit render commands */
-        glDrawArrays(GL_POINTS, 0, particle_vbo.element_count);
+        //glDrawArrays(GL_POINTS, 0, particle_vbo.element_count);
+
+        particle_system.render();
 
         /* reset state */
         shader.deactivate();
-        glBindVertexArray(0);
+
+        //glBindVertexArray(0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
 
         /* Poll for and process events */
         glfwPollEvents();
+
+        limit_framerate(glfwGetTime(), 1.0 / 60);
     }
 
     return 0;
