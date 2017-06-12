@@ -14,14 +14,6 @@ struct VboWrapper {
     uint32_t element_count;
 };
 
-
-float random_unit_normal() {
-    static default_random_engine generator;
-    static uniform_real_distribution<float> distribution(-1.0, 1.0);
-
-    return distribution(generator);
-}
-
 VboWrapper load_particle_vbo() {
     twodee::Emitter emitter {
             1.0,
@@ -35,7 +27,7 @@ VboWrapper load_particle_vbo() {
 
     for (twodee::Particle & p: particles) {
         p = emitter.emit_particle();
-        p.pos = {random_unit_normal(), random_unit_normal()};
+        //p.pos = {random_unit_normal(), random_unit_normal()};
     }
 
     GLuint vbo_id;
