@@ -6,7 +6,7 @@
 #define TWODEE_SHADER_H
 
 #include <string>
-#include <GLFW/glfw3.h>
+#include "twodee/gl.h"
 
 namespace twodee {
 

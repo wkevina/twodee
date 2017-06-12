@@ -3,7 +3,10 @@
 //
 
 #include "twodee/system.h"
-#include <twodee/common.h>
+#include "twodee/common.h"
+#include "twodee/gl.h"
+
+#include <iostream>
 
 namespace twodee {
 
@@ -45,6 +48,15 @@ void System::init()
     glfwGetFramebufferSize(window_, &width, &height);
 
     glViewport(0, 0, width, height);
+
+    GLenum err = glewInit();
+    if (GLEW_OK != err)
+      {
+	/* Problem: glewInit failed, something is seriously wrong. */
+	throw Error("Failed to initialize GLEW");
+
+      }
+    std::cout << "Status: Using GLEW " << glewGetString(GLEW_VERSION) << std::endl;
 }
 
 GLFWwindow *System::window()

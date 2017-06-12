@@ -5,7 +5,7 @@
 #ifndef TWODEE_SYSTEM_H
 #define TWODEE_SYSTEM_H
 
-#include <GLFW/glfw3.h>
+#include "twodee/gl.h"
 
 namespace twodee {
 
